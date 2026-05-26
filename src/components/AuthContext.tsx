@@ -1,52 +1,46 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'firebase/auth';
 
-// 1. Apni Firebase Config yahan fill karo
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-
+// Auth context ka structure define kar rahe hain
 const AuthContext = createContext<any>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  // App load hote hi loading khatam kar do
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser: any) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
-    return () => unsubscribe();
+    setLoading(false);
   }, []);
 
-  const login = async () => {
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("Login Error:", error);
-    }
+  // Simple Guest Login (No Firebase, No 2FA required)
+  const loginAsGuest = () => {
+    setUser({ name: "Guest User", email: "guest@megatool.com", isGuest: true });
   };
 
-  const logout = async () => {
-    await signOut(auth);
+  // Google login ko dummy bana diya hai kyunki 2FA nahi chahiye
+  const loginWithGoogle = () => {
+    console.log("Google Login clicked - Skipping 2FA and using Guest login instead.");
+    loginAsGuest();
+  };
+
+  const logout = () => {
+    setUser(null);
+  };
+
+  const value = {
+    user,
+    loading,
+    loginWithGoogle,
+    loginAsGuest,
+    logout
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={value}>
       {!loading && children}
     </AuthContext.Provider>
   );
 };
 
+// Hook taaki dusre components mein use kar sako
 export const useAuth = () => useContext(AuthContext);
