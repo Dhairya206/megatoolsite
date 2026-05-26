@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+∑import React, { createContext, useContext, useState, useEffect } from 'react';
 import { initializeApp, getApp, getApps } from 'firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, getDocFromServer, collection, writeBatch, serverTimestamp } from 'firebase/firestore';
@@ -88,8 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Safe runtime retrieval that prevents Rollup compilation errors if config is missing
         let config: any = null;
         try {
-          // First attempt: fetch static runtime configuration from route
-          const response = await fetch('/firebase-applet-config.json');
+          // First attempt: ≈fetch static runtime configuration from route
           if (response.ok) {
             config = await response.json();
           }
@@ -100,7 +99,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!config) {
           try {
             // Secondary attempt: dynamic chunk import using variable pointer to bypass Rollup compile-time lookups
-            const bundleConfigLocName = '../firebase-applet-config.json';
             const configModule = await import(/* @vite-ignore */ bundleConfigLocName);
             config = configModule.default || configModule;
           } catch (importErr) {
