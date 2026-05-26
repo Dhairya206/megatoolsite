@@ -1,29 +1,15 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
+import React, { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext<any>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null);
-  const auth = getAuth();
-  const provider = new GoogleAuthProvider();
 
-  useEffect(() => {
-    return onAuthStateChanged(auth, (user) => setUser(user));
-  }, [auth]);
-
-  const loginWithGoogle = async () => {
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("Login failed", error);
-    }
-  };
-
-  const logout = () => signOut(auth);
+  const login = () => setUser({ displayName: 'Guest User' });
+  const logout = () => setUser(null);
 
   return (
-    <AuthContext.Provider value={{ user, loginWithGoogle, logout }}>
+    <AuthContext.Provider value={{ user, loginWithGoogle: login, logout }}>
       {children}
     </AuthContext.Provider>
   );

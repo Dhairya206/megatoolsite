@@ -6,18 +6,19 @@ export const ToolGrid: React.FC<{darkMode: boolean, setDarkMode: (v: boolean) =>
   
   return (
     <div className={darkMode ? 'bg-gray-900 text-white min-h-screen p-6' : 'bg-gray-50 text-black min-h-screen p-6'}>
-      <h1 className="text-2xl font-bold mb-6">MegaTool Dashboard</h1>
-      
-      {!user ? (
-        <button onClick={loginWithGoogle} className="bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg">
-          Login with Google
-        </button>
-      ) : (
-        <div>
-          <p className="mb-4">Welcome, {user.displayName}!</p>
-          <button onClick={logout} className="text-red-500 underline">Logout</button>
-        </div>
-      )}
+      <h1 className="text-2xl font-bold">MegaTool Dashboard</h1>
+      <div className="mt-10">
+        {!user ? (
+          <button onClick={loginWithGoogle} className="bg-blue-500 text-white px-4 py-2 rounded">
+            Login
+          </button>
+        ) : (
+          <div>
+            <p>Welcome, {user.displayName}!</p>
+            <button onClick={logout} className="text-red-500 underline">Logout</button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
