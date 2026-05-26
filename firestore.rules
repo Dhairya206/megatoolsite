@@ -1,0 +1,78 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net (Pillar 1)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Reusable, hardened security primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Profile schema validation blueprint
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'displayName', 'email', 'favorites', 'createdAt'])
+        && data.keys().size() == 5
+        && data.uid is string
+        && data.uid.size() <= 128
+        && data.displayName is string
+        && data.displayName.size() <= 100
+        && data.email is string
+        && data.email.size() <= 200
+        && data.favorites is list
+        && data.favorites.size() <= 100
+        && data.createdAt is string
+        && data.createdAt.size() <= 50;
+    }
+
+    // Match blocks with Master Gate paradigm
+    match /users/{userId} {
+      // Restrict read to actual verified owner
+      allow get: if isOwner(userId) && isValidId(userId);
+      
+      // Prohibit blanket search query harvesting
+      allow list: if false;
+
+      // Constrain profile creations to authenticated owners
+      allow create: if isOwner(userId)
+        && isValidId(userId)
+        && isValidUser(incoming())
+        && incoming().uid == request.auth.uid;
+
+      // Hardened, Action-Based Updates with absolute immutability checks
+      allow update: if isOwner(userId)
+        && isValidId(userId)
+        && isValidUser(incoming())
+        && incoming().uid == existing().uid
+        && incoming().createdAt == existing().createdAt
+        && (
+          // Action Variant 1: Save bookmark preferences
+          incoming().diff(existing()).affectedKeys().hasOnly(['favorites'])
+          // Action Variant 2: Change profile display nickname
+          || incoming().diff(existing()).affectedKeys().hasOnly(['displayName'])
+        );
+
+      // Block cascade profile accounts deletions
+      allow delete: if false;
+    }
+  }
+}

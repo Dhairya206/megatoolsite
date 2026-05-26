@@ -1,0 +1,6 @@
+{
+  "name": "MegaTool",
+  "description": "A comprehensive suite of 50 premium offline utilities including image compression, PDF compiling, QR generation, password builder, word statistics, and helper modules.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

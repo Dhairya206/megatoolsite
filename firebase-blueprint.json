@@ -1,0 +1,38 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Premium user data sync profile holding personalized state, bookmarks, and preferences.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Unique user authenticated identification string matches Firebase UID."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The custom nickname or Google formatted name displayed in navigation."
+        },
+        "email": {
+          "type": "string",
+          "description": "The registered email address."
+        },
+        "favorites": {
+          "type": "array",
+          "description": "The list of saved tool identifiers favourited for fast launches."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The timestamp indicating when the user profile record was created."
+        }
+      },
+      "required": ["uid", "displayName", "email", "favorites", "createdAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "Personal profiles and synchronized client custom settings folders."
+    }
+  }
+}
